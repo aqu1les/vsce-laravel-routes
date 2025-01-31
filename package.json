@@ -1,8 +1,8 @@
 {
-  "name": "laravel-routes",
-  "displayName": "laravel-routes",
+  "name": "laravel-routes-js",
+  "displayName": "laravel-routes-js",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -16,11 +16,12 @@
   "repository": {
     "url": "https://github.com/aqu1les/vsce-laravel-routes"
   },
+  "publisher": "aqu1les",
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "laravel-routes.generateRoutes",
+        "command": "laravel-routes-js.generateRoutes",
         "title": "Criar intellisense de rotas"
       }
     ],
