@@ -17,7 +17,6 @@ export class AutoCompletionProvider implements vscode.CompletionItemProvider {
       return [];
     }
 
-    console.log({ i: this.items })
     return this.items ? this.items : [];
   }
 

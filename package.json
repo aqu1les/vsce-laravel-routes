@@ -2,7 +2,7 @@
   "name": "laravel-routes-js",
   "displayName": "Laravel Routes JS/TS",
   "description": "",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -73,7 +73,8 @@
     "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "vs:publish": "vsce publish --no-dependencies"
   },
   "dependencies": {
     "nunjucks": "^3.2.4"
