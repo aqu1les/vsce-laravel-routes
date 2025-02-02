@@ -21,10 +21,45 @@
   "contributes": {
     "commands": [
       {
-        "command": "laravel-routes-js.generateRoutes",
-        "title": "Criar intellisense de rotas"
+        "command": "laravel-routes-js.loadRoutes",
+        "title": "[Laravel Routes]: Carregar rotas do meu projeto laravel",
+        "shortTitle": "Carregar rotas"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Laravel Routes JS",
+      "properties": {
+        "routes.languages": {
+          "type": "array",
+          "default": [
+            "php",
+            "javascript",
+            "typescript",
+            "vue"
+          ],
+          "description": "Languages that should have the routes autocompletion.",
+          "examples": [
+            "svelte"
+          ]
+        },
+        "routes.RoutesFolderPaths": {
+          "type": "string",
+          "default": "routes",
+          "description": "Path for routes files. (Relative to the workspace directory). We will listen to changes on this directory.",
+          "examples": [
+            "api-routes"
+          ]
+        },
+        "suggestions.patterns": {
+          "type": "array",
+          "default": [],
+          "description": "Regexes to match function name where it should suggest the route names.",
+          "examples": [
+            "\/route\\(/gm"
+          ]
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
@@ -41,19 +76,20 @@
     "test": "vscode-test"
   },
   "dependencies": {
-    "laravel-routes-ts-plugin": "file:./dist/ts-plugin"
+    "nunjucks": "^3.2.4"
   },
   "devDependencies": {
-    "@types/vscode": "^1.96.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
+    "@types/nunjucks": "^3.2.6",
+    "@types/vscode": "^1.96.0",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.17.0",
-    "eslint": "^9.16.0",
-    "esbuild": "^0.24.0",
-    "npm-run-all": "^4.1.5",
-    "typescript": "^5.7.2",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.16.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.7.2"
   }
 }

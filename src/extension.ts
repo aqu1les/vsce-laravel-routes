@@ -1,123 +1,62 @@
-import * as vscode from 'vscode';
-import { exec } from "child_process";
 import fs from 'fs';
 import path from 'path';
+import * as vscode from 'vscode';
 
-import { promisify } from "util";
-
-const execAsync = promisify(exec);
-
-type RouteDefinition = {
-	uri: string;
-	name: string;
-	action: string;
-	domain: string | null;
-	method: string;
-	middleware: string[];
-};
-
-class AutoCompletionProvider implements vscode.CompletionItemProvider {
-	constructor(private items: vscode.CompletionItem[] = []) { }
-
-	provideCompletionItems(
-		document: vscode.TextDocument,
-		position: vscode.Position,
-		token: vscode.CancellationToken,
-		context: vscode.CompletionContext
-	): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
-		if (!document.lineAt(position).text.includes('route(')) {
-			return [];
-		}
-
-		return this.items ? this.items : [];
-	}
-	setItems(items: vscode.CompletionItem[]) {
-		this.items = items;
-		return this;
-	}
-}
+import { AutoCompletionProvider } from './completion-provider';
+import { generateRoutesCompletion } from './routes/generate-routes-completions';
+import { getFunctionNamePatterns, getRoutesFoldersPaths, languagesToSupport } from './config';
 
 const watchers: fs.FSWatcher[] = [];
 
 export function activate(context: vscode.ExtensionContext) {
 	const workspaceFolders = vscode.workspace.workspaceFolders?.map(folder => folder.uri.fsPath) ?? [];
 
-	const disposable = vscode.commands.registerCommand('laravel-routes.generateRoutes', () => {
-		findRoutesAndSetCompletion(false);
+	const disposable = vscode.commands.registerCommand('laravel-routes-js.loadRoutes', async () => {
+		await findRoutesAndSetCompletion(completionProvider, workspaceFolders);
+		vscode.window.showInformationMessage(vscode.l10n.t('Rotas mapeadas com sucesso!'));
 	});
 
 	context.subscriptions.push(disposable);
 
-	const completionProvider = new AutoCompletionProvider();
-	context.subscriptions.push(...registerCompletionProviderForLanguages(['php', 'javascript', 'typescript', 'vue'], completionProvider));
+	const completionProvider = new AutoCompletionProvider(getFunctionNamePatterns());
+	const completionForLanguages = registerCompletionProviderForLanguages(languagesToSupport(), completionProvider);
+	context.subscriptions.push(...completionForLanguages);
 
-	findRoutesAndSetCompletion(true);
+	findRoutesAndSetCompletion(completionProvider, workspaceFolders);
 
-	function findRoutesAndSetCompletion(watch = false) {
-		workspaceFolders.forEach(async folder => {
-			if (!fs.existsSync(path.join(folder, 'artisan'))) {
-				console.log('[Laravel Routes]: Arquivo artisan não encontrado ', folder);
-				return;
-			}
-
-			const items = await getCompletionItems(folder);
-			completionProvider.setItems(items);
-
-			if (!watch) { return; }
-			watchers.push(fs.watch(path.join(folder, 'routes'), async () => {
-				const items = await getCompletionItems(folder);
-				completionProvider.setItems(items);
-			}));
-		});
-	}
+	watchers.push(...watchRoutesFolders(completionProvider, workspaceFolders));
 }
 
 export function deactivate() {
 	watchers.forEach(watcher => watcher.close());
 }
 
-async function getCompletionItems(folder: string) {
-	const routes = await getRoutes(folder);
-
-	return routes.map((route): vscode.CompletionItem => ({
-		insertText: route.name,
-		label: `${route.name}`,
-		detail: `${route.uri}`,
-		kind: 4,
-		documentation: routeDocumentation(route),
-	}));
+function registerCompletionProviderForLanguages(languages: string[], completionProvider: AutoCompletionProvider) {
+	return languages.map(language => vscode.languages.registerCompletionItemProvider({ language }, completionProvider, "'", '"', '`'));
 }
 
-async function getRoutes(path: string) {
-	console.log('[Laravel Routes]: Pegando rotas para o workspace: ', path);
-
-	try {
-		const { stderr, stdout } = await execAsync(`php ${path}/artisan route:list --json`);
-		if (stderr) {
-			throw new Error(stderr);
+async function findRoutesAndSetCompletion(completionProvider: AutoCompletionProvider, folders: string[]) {
+	for (const folder of folders) {
+		if (!fs.existsSync(path.join(folder, 'artisan'))) {
+			console.log('[Laravel Routes]: artisan file not found', folder);
+			continue;
 		}
 
-		return JSON.parse(stdout) as RouteDefinition[];
-	} catch (error) {
-		console.error("[Laravel Routes]: Erro:", error);
-		return [];
+		const items = await generateRoutesCompletion(folder);
+		completionProvider.setItems(items);
 	}
 }
 
+function watchRoutesFolders(completionProvider: AutoCompletionProvider, workspaces: string[]) {
+	const routesPath = getRoutesFoldersPaths();
 
-function routeDocumentation(route: RouteDefinition) {
-	const methods = route.method.split('|').join(', ');
-	const middlewares = `* ${route.middleware.filter(Boolean).join('\n* ')}`;
+	return workspaces.map(workspace => routesPath.map(dir => {
+		const watchTarget = path.join(workspace, dir);
+		console.log(`[Laravel Routes]: Listening for changes on ${watchTarget}`);
 
-	let result = `#### URL\n${route.uri}\n#### Methods\n${methods}\n#### Middlewares\n${middlewares}\n#### Action\n${route.action}`;
-
-	if (route.domain) {
-		result = result += `\n#### Domain\n${route.domain}`;
-	}
-
-	return new vscode.MarkdownString(result);
-}
-
-function registerCompletionProviderForLanguages(languages: string[], completionProvider: AutoCompletionProvider) {
-	return languages.map(language => vscode.languages.registerCompletionItemProvider({ language }, completionProvider, "'", '"'));
+		return fs.watch(watchTarget, async () => {
+			const items = await generateRoutesCompletion(workspace);
+			completionProvider.setItems(items);
+		});
+	})).flat();
 }

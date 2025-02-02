@@ -1,4 +1,5 @@
 const esbuild = require("esbuild");
+const mdLoaderEsbuild = require("./lib/md-loader.esbuild");
 
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');
@@ -38,6 +39,7 @@ async function main() {
 		external: ['vscode'],
 		logLevel: 'silent',
 		plugins: [
+			mdLoaderEsbuild,
 			/* add to the end of plugins array */
 			esbuildProblemMatcherPlugin,
 		],
