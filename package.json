@@ -1,8 +1,8 @@
 {
   "name": "laravel-routes-js",
   "displayName": "Laravel Routes JS/TS",
-  "description": "",
-  "version": "0.0.4",
+  "description": "Enhance your Laravel development with intelligent route name autocompletion in VSCode. Supports PHP, JavaScript, TypeScript, and Vue, with customizable settings for maximum flexibility.",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -29,7 +29,7 @@
     "configuration": {
       "title": "Laravel Routes JS",
       "properties": {
-        "routes.languages": {
+        "laravel-routes-js.routes.languages": {
           "type": "array",
           "default": [
             "php",
@@ -39,23 +39,33 @@
           ],
           "description": "Languages that should have the routes autocompletion.",
           "examples": [
-            "svelte"
+            [
+              "svelte"
+            ]
           ]
         },
-        "routes.RoutesFolderPaths": {
-          "type": "string",
-          "default": "routes",
+        "laravel-routes-js.routes.routesFolderPaths": {
+          "type": "array",
+          "default": [
+            "routes"
+          ],
           "description": "Path for routes files. (Relative to the workspace directory). We will listen to changes on this directory.",
           "examples": [
-            "api-routes"
+            [
+              "api-routes"
+            ]
           ]
         },
-        "suggestions.patterns": {
+        "laravel-routes-js.suggestions.patterns": {
           "type": "array",
-          "default": [],
-          "description": "Regexes to match function name where it should suggest the route names.",
+          "default": [
+            "/route\\(/gm"
+          ],
+          "description": "Regexes to match function name where it should suggest the route names. (It should be the regex.toString() Js methods result)",
           "examples": [
-            "\/route\\(/gm"
+            [
+              "/route\\(/gm"
+            ]
           ]
         }
       }

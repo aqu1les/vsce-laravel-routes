@@ -22,15 +22,17 @@ You can customize the extension settings according to your project needs:
 
 | Setting                | Description                                  | Default Value |
 |------------------------|----------------------------------------------|--------------|
-| `laravelRoutes.languages` | Specifies the languages where autocomplete is enabled. | `["php", "javascript", "typescript", "vue"]` |
-| `laravelRoutes.routePath` | Defines the path(s) where Laravel routes are stored. | `"routes"` |
+| `laravel-routes-js.routes.languages` | Specifies the languages where autocomplete is enabled. | `["php", "javascript", "typescript", "vue"]` |
+| `laravel-routes-js.routes.routesFolderPaths` | Defines the path(s) where Laravel routes are stored. | `["routes"]` |
+| `laravel-routes-js.suggestions.patterns` | Defines the regexes to match in which functions the autocomplete should appear. | `["/route\\(/gm"]` |
 
 ### **Example `settings.json` Configuration**
 
 ```jsonc
 {
-  "laravelRoutes.languages": ["svelte"], // The already mentioned languages are always supported.
-  "laravelRoutes.routePath": "my-routes"
+  "laravel-routes-js.routes.languages": ["svelte"], // The already mentioned languages are always supported.
+  "laravel-routes-js.routes.routesFolderPaths": ["my-routes"], // routes path is always watched for changes
+  "laravel-routes-js.suggestions.patterns": ["/route\\(/gm"],
 }
 ```
 
