@@ -2,7 +2,7 @@
   "name": "laravel-routes-js",
   "displayName": "Laravel Routes JS/TS",
   "description": "Enhance your Laravel development with intelligent route name autocompletion in VSCode. Supports PHP, JavaScript, TypeScript, and Vue, with customizable settings for maximum flexibility.",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "engines": {
     "vscode": "^1.96.0"
   },
