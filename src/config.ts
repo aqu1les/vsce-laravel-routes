@@ -7,7 +7,7 @@ export const CONFIG = {
   suggestions: {
     patterns: ['/route\\(/gm'],
   }
-};
+} as const;
 
 
 const DEFAULT_LANGUAGES = ['php', 'javascript', 'typescript', 'vue'];

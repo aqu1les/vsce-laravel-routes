@@ -87,7 +87,9 @@
     "vs:publish": "vsce publish --no-dependencies"
   },
   "dependencies": {
-    "nunjucks": "^3.2.4"
+    "fuse.js": "^7.1.0",
+    "nunjucks": "^3.2.4",
+    "signal-polyfill": "^0.2.2"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
