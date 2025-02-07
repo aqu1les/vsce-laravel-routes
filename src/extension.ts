@@ -186,9 +186,9 @@ function updateRoutesUsageStateOnLine(textDocument: vscode.TextDocument, diagnos
 	}
 
 	// TODO: Customizable fn name patterns
-	const matches = line.text.matchAll(/(?<=route\(['`"])(.*?)(?=['`"]\))/gm);
+	const matches = line.text.matchAll(/(?<=route\(['"`])[^'"`,]+(?=['"`]\s*(?:,|\)))/gm);
 	for (const match of matches) {
-		const routeName = match[1];
+		const routeName = match[0];
 
 		const start = new vscode.Position(line.lineNumber, match.index);
 		const end = new vscode.Position(line.lineNumber, match.index + routeName.length);

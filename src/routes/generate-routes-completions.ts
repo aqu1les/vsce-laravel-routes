@@ -8,7 +8,7 @@ export function generateRoutesCompletion(routes: RouteDefinition[]) {
     insertText: route.name,
     label: `${route.name}`,
     detail: `${route.uri}`,
-    kind: 4,
+    kind: 9,
     documentation: routeDocumentation(route),
   }));
 }
